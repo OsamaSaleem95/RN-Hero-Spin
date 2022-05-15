@@ -23,7 +23,7 @@ export default Button = ({ onPress, text, buttonStyles, textStyles, color }) => 
 
 const styles = StyleSheet.create({
     button: {
-        width: '50%',
+        width: '60%',
         alignSelf: 'center',
         borderWidth: 2,
         alignItems: 'center',
