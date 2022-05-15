@@ -9,9 +9,8 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import type { Node } from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
-
+StatusBar
 } from 'react-native';
 import AppNavigator from './src/containers'
 import { Provider } from 'react-redux';
@@ -22,17 +21,10 @@ const App: () => Node = () => {
   const { store } = configureStore()
   return (
     <Provider store={store}>
-      <SafeAreaView style={styles.container}>
-        <AppNavigator />
-      </SafeAreaView>
+      <StatusBar barStyle='light-content'/>
+      <AppNavigator />
     </Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  }
-});
 
 export default App;

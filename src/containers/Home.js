@@ -2,28 +2,42 @@ import React, { useEffect } from 'react';
 import {
     StyleSheet,
     SafeAreaView,
-    Text
+    Text,
+    ImageBackground
 } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import Button from '../common/Button';
 import Theme from '../common/Theme';
-import { searchMovieAction } from '../store/actions/MainActions';
+import { getRandomMovieAction } from '../store/actions/MainActions';
 
 export default Home = ({ navigation }) => {
-
     const dispatcher = useDispatch()
-    useEffect(() => {
-        dispatcher(searchMovieAction())
-    }, [])
+    const MainReducer = useSelector(state => state.MainReducer);
+    const { currentMovie = {} } = MainReducer
+
+    const onGetRandomPress = () => {
+        dispatcher(
+            getRandomMovieAction()
+        )
+    }
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Text>osama</Text>
-        </SafeAreaView>
+        <ImageBackground
+            source={require('../assets/background.jpeg')}
+            style={styles.container}
+        >
+            <Button
+                text='Get Random Movie'
+                color={'#fff'}
+                onPress={onGetRandomPress}
+            />
+            <Text>{currentMovie.Title}</Text>
+        </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        ...Theme.styles.mainContainers
+        ...Theme.styles.mainContainers,
     },
 });
