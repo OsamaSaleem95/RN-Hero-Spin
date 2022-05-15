@@ -14,13 +14,18 @@ import {
 
 } from 'react-native';
 import AppNavigator from './src/containers'
+import { Provider } from 'react-redux';
+import configureStore from './src/store/configureStore'
 
 const App: () => Node = () => {
 
+  const { store } = configureStore()
   return (
-    <SafeAreaView style={styles.container}>
-      <AppNavigator />
-    </SafeAreaView>
+    <Provider store={store}>
+      <SafeAreaView style={styles.container}>
+        <AppNavigator />
+      </SafeAreaView>
+    </Provider>
   );
 };
 
