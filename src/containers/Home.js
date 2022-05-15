@@ -7,7 +7,7 @@ import {
     View,
     Animated,
     Easing,
-    Dimensions
+    Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient'
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +15,8 @@ import Button from '../common/Button';
 import Theme from '../common/Theme';
 import MovieCard from '../components/MovieCard';
 import { getRandomMovieAction } from '../store/actions/MainActions';
+import AppPicker from '../common/AppPicker'
+import { superheroes } from '../helpers/constants';
 
 
 export default Home = ({ navigation }) => {
@@ -23,25 +25,24 @@ export default Home = ({ navigation }) => {
     const { currentMovie = {} } = MainReducer
 
     const animatedValue = useRef(new Animated.Value(0)).current;
-    const [isShowMode, setisShowMode] = useState(false)
+    const [pickerVisible, setPickerVisible] = useState(false)
+    const [selectedHero, setSelectedHero] = useState(null)
 
-    const onGetRandomPress = () => {
-        dispatcher(
-            getRandomMovieAction()
-        )
-    }
 
-    const toggleShowModeAnimation = () => {
+
+    const toggleShowModeAnimation = (flag) => {
         Animated.timing(animatedValue, {
-            toValue: isShowMode ? 0 : 1,
+            toValue: flag ? 1 : 0,
             duration: 500,
             easing: Easing.out(Easing.circle),
             useNativeDriver: true
-        }).start(() => {
-            setTimeout(() => {
-                setisShowMode(!isShowMode)
-            }, 500);
-        })
+        }).start()
+    }
+    const enableShowMode = () => {
+        toggleShowModeAnimation(true)
+    }
+    const disableShowMode = () => {
+        toggleShowModeAnimation(false)
     }
 
     const buttonContAnimatedStyles = {
@@ -74,11 +75,57 @@ export default Home = ({ navigation }) => {
         }),
     }
 
+    const logoAnimatedStyles = {
+        transform: [
+            {
+                translateY: animatedValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-Dimensions.get('screen').height * 0.25, -Dimensions.get('screen').height * 0.50],
+                }),
+            }
+        ]
+    }
+    const getRandom = () => {
+        setSelectedHero('')
+        dispatcher(
+            getRandomMovieAction('', () => {
+                enableShowMode()
+            })
+        )
+    }
+
+    const getRandomByHero = () => {
+        dispatcher(
+            getRandomMovieAction(selectedHero, () => {
+                enableShowMode()
+            })
+        )
+    }
+
+    const onPickerCancel = () => {
+        setPickerVisible(false)
+    }
+
+    const openPicker = () => {
+        setPickerVisible(true)
+    }
+
+    const onPickerSubmit = () => {
+        getRandomByHero()
+        setPickerVisible(false)
+    }
+
+    const onGoNextPress = () => {
+        if (!!selectedHero) getRandomByHero()
+        else getRandom()
+    }
+
     return (
         <ImageBackground
             source={require('../assets/background.jpeg')}
             style={styles.container}
         >
+            <Animated.Text style={[styles.logo, logoAnimatedStyles]}>Hero Spin</Animated.Text>
             <MovieCard
                 data={currentMovie}
                 animatedValue={animatedValue}
@@ -87,36 +134,44 @@ export default Home = ({ navigation }) => {
                 <Button
                     text='Get Random Movie'
                     color={'#fff'}
-                    onPress={onGetRandomPress}
+                    onPress={getRandom}
                     buttonStyles={styles.button}
                 />
                 <Button
                     text='Get Random Movie by Hero'
                     color={'#fff'}
-                    onPress={toggleShowModeAnimation}
+                    onPress={openPicker}
                     buttonStyles={styles.button}
                 />
             </Animated.View>
             <Animated.View style={[styles.buttonsContainer2, buttonContAnimatedStyles2]}>
                 <LinearGradient
-                    colors={['transparent','black','black', 'black']}
+                    colors={['transparent', 'black', 'black', 'black']}
                     style={styles.linearGradient}
-                    start={{ x: 0.5, y:0 }}
+                    start={{ x: 0.5, y: 0 }}
                 >
                     <Button
                         text='Back'
                         color={'#fff'}
-                        onPress={toggleShowModeAnimation}
+                        onPress={disableShowMode}
                         buttonStyles={styles.backButton}
                     />
                     <Button
                         text='Go Next'
                         color={'#fff'}
-                        onPress={toggleShowModeAnimation}
+                        onPress={onGoNextPress}
                         buttonStyles={styles.button}
                     />
                 </LinearGradient>
             </Animated.View>
+            <AppPicker
+                data={superheroes}
+                visible={pickerVisible}
+                onCancel={onPickerCancel}
+                onSubmit={onPickerSubmit}
+                selected={selectedHero}
+                setSelected={setSelectedHero}
+            />
         </ImageBackground>
     );
 };
@@ -127,6 +182,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingTop: 0,
         paddingBottom: 0
+    },
+    logo: {
+        color: '#fff',
+        position: 'absolute',
+        width: '100%',
+        textAlign: 'center',
+        fontSize: 50,
+        fontWeight: 'bold'
     },
     buttonsContainer: {
         height: 140,
@@ -140,7 +203,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         width: '100%',
-        height:100
+        height: 100
     },
     backButton: {
         width: 50,

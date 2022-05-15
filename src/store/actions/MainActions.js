@@ -5,7 +5,8 @@ import {
 } from '../services/MainServices';
 import { SEARCH_SUCCESS, PICK_MOVIE, INCRESE_PAGE_NUMBER } from '../types';
 
-export const getRandomMovieAction = (searchName) => (dispatch, getState) => {
+export const getRandomMovieAction = (searchName, callback) => (dispatch, getState) => {
+  console.log(searchName)
 
   var randomIndex = Math.floor(Math.random() * superheroes.length);
   const isSearchedByName = !!searchName
@@ -21,7 +22,6 @@ export const getRandomMovieAction = (searchName) => (dispatch, getState) => {
       payload: searchName
     })
     const pageNumber = getState()?.MainReducer?.pageNumbers[searchName] || 1
-    console.log(pageNumber)
     searchMovieService(searchName, pageNumber)
       .then(res => {
         const parsedResult = prepareResultForCaching(res)
@@ -30,12 +30,16 @@ export const getRandomMovieAction = (searchName) => (dispatch, getState) => {
           payload: { searchName, parsedResult }
         })
         dispatch(pickMovieFromCache(searchName, isSearchedByName))
+        callback()
       })
       .catch(e => {
         console.log(e)
       });
   }
-  else dispatch(pickMovieFromCache(searchName, isSearchedByName))
+  else {
+    dispatch(pickMovieFromCache(searchName, isSearchedByName))
+    callback()
+  }
 
 };
 

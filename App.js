@@ -10,7 +10,7 @@ import React from 'react';
 import type { Node } from 'react';
 import {
   StyleSheet,
-StatusBar
+  StatusBar
 } from 'react-native';
 import AppNavigator from './src/containers'
 import { Provider } from 'react-redux';
@@ -19,9 +19,10 @@ import configureStore from './src/store/configureStore'
 const App: () => Node = () => {
 
   const { store } = configureStore()
+  console.disableYellowBox = true
   return (
     <Provider store={store}>
-      <StatusBar barStyle='light-content'/>
+      <StatusBar barStyle='light-content' />
       <AppNavigator />
     </Provider>
   );

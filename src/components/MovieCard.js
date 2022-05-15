@@ -74,10 +74,10 @@ const styles = StyleSheet.create({
 
     },
     infoRow: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        marginBottom: 10
     },
     description: {
-        marginTop: 10,
         color: '#fff',
         fontSize: 16,
     },
