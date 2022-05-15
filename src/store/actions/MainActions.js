@@ -6,8 +6,6 @@ import {
 import { SEARCH_SUCCESS, PICK_MOVIE, INCRESE_PAGE_NUMBER } from '../types';
 
 export const getRandomMovieAction = (searchName, callback) => (dispatch, getState) => {
-  console.log(searchName)
-
   var randomIndex = Math.floor(Math.random() * superheroes.length);
   const isSearchedByName = !!searchName
   searchName = searchName || superheroes[randomIndex]

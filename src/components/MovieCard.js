@@ -12,7 +12,6 @@ import Theme from '../common/Theme';
 
 
 export default MovieCard = ({ data, animatedValue }) => {
-    console.log(data)
     const animatedStyles = {
         transform: [
             {

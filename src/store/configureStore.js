@@ -19,6 +19,5 @@ export default function configureStore(preloadedState) {
     preloadedState,
     composedEnhancers,
   );
-  console.log(store)
   return { store };
 }
