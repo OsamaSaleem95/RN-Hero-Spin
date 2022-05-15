@@ -1,7 +1,7 @@
 import omdbService from './APIconfig';
 
-export const searchMovieService = () => {
-  return omdbService(`/?s=spiderman`)
+export const searchMovieService = (searchName, page = 1) => {
+  return omdbService(`/?type=movie&s=${searchName}&page=${page}`)
     .then(res => {
       return res.data;
     })

@@ -1,11 +1,16 @@
-export const styles = {
+const iphoneSafeArea = {
+  paddingTop: 44,
+  paddingBottom: 34
+}
+
+const styles = {
   mainContainers: {
     flex: 1,
-    backgroundColor: 'red'
+    ...iphoneSafeArea
   }
 };
 
-export const colors = {
+const colors = {
   background: '#F9FAFB',
   fontColor: '#231F20',
   blue: '#35c6f4',
@@ -16,6 +21,8 @@ export const colors = {
   dark: "#6d6e71",
 
 };
+
+
 
 export default {
   styles,

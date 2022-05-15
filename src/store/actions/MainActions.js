@@ -1,18 +1,54 @@
+import { superheroes } from '../../helpers/constants';
+import prepareResultForCaching from '../extractors/prepareResultForCaching';
 import {
   searchMovieService,
 } from '../services/MainServices';
-import { SEARCH_SUCCESS } from '../types';
+import { SEARCH_SUCCESS, PICK_MOVIE, INCRESE_PAGE_NUMBER } from '../types';
 
-export const searchMovieAction = () => dispatch => {
-  // dispatch(toggleLoadingIndicator(true));
-  searchMovieService()
-    .then(res => {
-      dispatch({
-        type: SEARCH_SUCCESS,
-        payload: res?.results
-      })
+export const getRandomMovieAction = (searchName) => (dispatch, getState) => {
+
+  var randomIndex = Math.floor(Math.random() * superheroes.length);
+  const isSearchedByName = !!searchName
+  searchName = searchName || superheroes[randomIndex]
+
+  const cache = getState().MainReducer.cache
+  const moviesByHero = cache[searchName] || {}
+  const pickedBeforeIds = getState().MainReducer.pickedBefore
+  const notPickedBeforeMovies = Object.values(moviesByHero).filter(movie => !pickedBeforeIds.includes(movie.imdbID))
+  if (notPickedBeforeMovies?.length == 0) {
+    dispatch({
+      type: INCRESE_PAGE_NUMBER,
+      payload: searchName
     })
-    .catch(e => {
-      console.log(e)
-    });
+    const pageNumber = getState()?.MainReducer?.pageNumbers[searchName] || 1
+    console.log(pageNumber)
+    searchMovieService(searchName, pageNumber)
+      .then(res => {
+        const parsedResult = prepareResultForCaching(res)
+        dispatch({
+          type: SEARCH_SUCCESS,
+          payload: { searchName, parsedResult }
+        })
+        dispatch(pickMovieFromCache(searchName, isSearchedByName))
+      })
+      .catch(e => {
+        console.log(e)
+      });
+  }
+  else dispatch(pickMovieFromCache(searchName, isSearchedByName))
+
+};
+
+export const pickMovieFromCache = (heroName, isSearchedByName = false) => (dispatch, getState) => {
+  const cache = getState().MainReducer.cache
+  const moviesByHero = cache[heroName] || {}
+  const pickedBeforeIds = getState().MainReducer.pickedBefore
+  const notPickedBeforeMovies = Object.values(moviesByHero).filter(movie => !pickedBeforeIds.includes(movie.imdbID))
+  if (notPickedBeforeMovies.length > 0)
+    dispatch({
+      type: PICK_MOVIE,
+      payload: notPickedBeforeMovies[0]
+    })
+  // else if (isSearchedByName) dispatch(getRandomMovieAction(heroName))
+  // else dispatch(getRandomMovieAction(heroName))
 };
