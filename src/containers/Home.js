@@ -12,8 +12,8 @@ import Button from '../common/Button';
 import Theme from '../common/Theme';
 import MovieCard from '../components/MovieCard';
 import { getRandomMovieAction } from '../store/actions/MainActions';
-import AppPicker from '../common/AppPicker'
 import { superheroes } from '../helpers/constants';
+import HeroPicker from '../common/HeroPicker';
 
 
 export default Home = () => {
@@ -91,8 +91,9 @@ export default Home = () => {
     const openPicker = () => {
         setPickerVisible(true)
     }
-    const onPickerSubmit = () => {
-        getRandomByHero()
+    const onPickerSubmit = (selected) => {
+        setSelectedHero(selected)
+        getRandomByHero(selected)
         setPickerVisible(false)
     }
 
@@ -109,9 +110,9 @@ export default Home = () => {
             })
         )
     }
-    const getRandomByHero = () => {
+    const getRandomByHero = (selected) => {
         dispatcher(
-            getRandomMovieAction(selectedHero, () => {
+            getRandomMovieAction(selected || selectedHero, () => {
                 enableShowMode()
             })
         )
@@ -161,13 +162,11 @@ export default Home = () => {
                     />
                 </LinearGradient>
             </Animated.View>
-            <AppPicker
+            <HeroPicker
                 data={superheroes}
                 visible={pickerVisible}
                 onCancel={onPickerCancel}
                 onSubmit={onPickerSubmit}
-                selected={selectedHero}
-                setSelected={setSelectedHero}
             />
         </ImageBackground>
     );

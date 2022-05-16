@@ -7,7 +7,7 @@ import { SEARCH_SUCCESS, PICK_MOVIE, INCRESE_PAGE_NUMBER, MOVE_TO_BLACK_LIST } f
 import { arraysOuterJoin, filterNotPickedBeforeMovies, getRandomFromArray } from '../../helpers/randomMoviesHelpers';
 
 export const getRandomMovieAction = (searchName, callback) => (dispatch, getState) => {
-  const superheroesWhitelist = arraysOuterJoin(superheroes, getState().MainReducer.blacklist)
+  const superheroesWhitelist = arraysOuterJoin(superheroes.map(h => h.name), getState().MainReducer.blacklist)
   const randomSuperHeroName = getRandomFromArray(superheroesWhitelist)
   searchName = searchName || randomSuperHeroName
 
