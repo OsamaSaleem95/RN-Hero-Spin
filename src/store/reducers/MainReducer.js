@@ -26,7 +26,7 @@ export default (state = INITIAL_STATE, action) => {
     case PICK_MOVIE: {
       return {
         ...state,
-        pickedBefore: [...state.pickedBefore, action.payload.imdbID],
+        pickedBefore: [...state.pickedBefore, action?.payload?.imdbID],
         currentMovie: action.payload
       };
     }
