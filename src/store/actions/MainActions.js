@@ -3,15 +3,15 @@ import { superheroes } from '../../helpers/constants';
 import {
   searchMovieService,
 } from '../services/MainServices';
-import { SEARCH_SUCCESS, PICK_MOVIE, INCRESE_PAGE_NUMBER } from '../types';
-import { filterNotPickedBeforeMovies, getRandomFromArray } from '../../helpers/randomMoviesHelpers';
+import { SEARCH_SUCCESS, PICK_MOVIE, INCRESE_PAGE_NUMBER, MOVE_TO_BLACK_LIST } from '../types';
+import { arraysOuterJoin, filterNotPickedBeforeMovies, getRandomFromArray } from '../../helpers/randomMoviesHelpers';
 
 export const getRandomMovieAction = (searchName, callback) => (dispatch, getState) => {
-  const randomSuperHeroName = getRandomFromArray(superheroes)
+  const superheroesWhitelist = arraysOuterJoin(superheroes, getState().MainReducer.blacklist)
+  const randomSuperHeroName = getRandomFromArray(superheroesWhitelist)
   searchName = searchName || randomSuperHeroName
 
   const toBePickedMovies = filterNotPickedBeforeMovies(getState().MainReducer, searchName)
-  console.log(toBePickedMovies)
   if (toBePickedMovies?.length == 0) {
     dispatch({
       type: INCRESE_PAGE_NUMBER,
@@ -21,7 +21,6 @@ export const getRandomMovieAction = (searchName, callback) => (dispatch, getStat
     searchMovieService(searchName, pageNumber)
       .then(res => {
         const parsedResult = prepareResultForCaching(res)
-        console.log(parsedResult)
         dispatch({
           type: SEARCH_SUCCESS,
           payload: { searchName, parsedResult }
@@ -33,6 +32,10 @@ export const getRandomMovieAction = (searchName, callback) => (dispatch, getStat
       })
       .catch(e => {
         console.log(e)
+        if (e === 'notFound') {
+          alert(`No More Movies for ${searchName}`)
+          dispatch(moveToBlacklist(searchName))
+        }
       });
   }
   else {
@@ -46,5 +49,12 @@ export const pickMovieFromCache = (moviesList) => (dispatch, getState) => {
   dispatch({
     type: PICK_MOVIE,
     payload: moviesList[0]
+  })
+};
+
+export const moveToBlacklist = (heroName) => (dispatch, getState) => {
+  dispatch({
+    type: MOVE_TO_BLACK_LIST,
+    payload: heroName
   })
 };
