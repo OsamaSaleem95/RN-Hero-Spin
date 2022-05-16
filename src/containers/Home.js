@@ -1,10 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
     StyleSheet,
-    SafeAreaView,
-    Text,
     ImageBackground,
-    View,
     Animated,
     Easing,
     Dimensions,
@@ -19,17 +16,16 @@ import AppPicker from '../common/AppPicker'
 import { superheroes } from '../helpers/constants';
 
 
-export default Home = ({ navigation }) => {
+export default Home = () => {
     const dispatcher = useDispatch()
     const MainReducer = useSelector(state => state.MainReducer);
     const { currentMovie = {} } = MainReducer
 
-    const animatedValue = useRef(new Animated.Value(0)).current;
     const [pickerVisible, setPickerVisible] = useState(false)
     const [selectedHero, setSelectedHero] = useState(null)
 
-
-
+    //animation
+    const animatedValue = useRef(new Animated.Value(0)).current;
     const toggleShowModeAnimation = (flag) => {
         Animated.timing(animatedValue, {
             toValue: flag ? 1 : 0,
@@ -85,6 +81,26 @@ export default Home = ({ navigation }) => {
             }
         ]
     }
+
+
+
+    //picker
+    const onPickerCancel = () => {
+        setPickerVisible(false)
+    }
+    const openPicker = () => {
+        setPickerVisible(true)
+    }
+    const onPickerSubmit = () => {
+        getRandomByHero()
+        setPickerVisible(false)
+    }
+
+    //functions
+    const onGoNextPress = () => {
+        if (!!selectedHero) getRandomByHero()
+        else getRandom()
+    }
     const getRandom = () => {
         setSelectedHero('')
         dispatcher(
@@ -93,31 +109,12 @@ export default Home = ({ navigation }) => {
             })
         )
     }
-
     const getRandomByHero = () => {
         dispatcher(
             getRandomMovieAction(selectedHero, () => {
                 enableShowMode()
             })
         )
-    }
-
-    const onPickerCancel = () => {
-        setPickerVisible(false)
-    }
-
-    const openPicker = () => {
-        setPickerVisible(true)
-    }
-
-    const onPickerSubmit = () => {
-        getRandomByHero()
-        setPickerVisible(false)
-    }
-
-    const onGoNextPress = () => {
-        if (!!selectedHero) getRandomByHero()
-        else getRandom()
     }
 
     return (

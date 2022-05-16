@@ -1,11 +1,12 @@
-import { SEARCH_SUCCESS, PICK_MOVIE, INCRESE_PAGE_NUMBER } from '../types';
+import { SEARCH_SUCCESS, PICK_MOVIE, INCRESE_PAGE_NUMBER, MOVE_TO_BLACK_LIST } from '../types';
 
 const INITIAL_STATE = {
   isSearching: false,
   cache: {},
   pickedBefore: [],
   currentMovie: {},
-  pageNumbers: {}
+  pageNumbers: {},
+  blacklist: []
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -26,7 +27,7 @@ export default (state = INITIAL_STATE, action) => {
     case PICK_MOVIE: {
       return {
         ...state,
-        pickedBefore: [...state.pickedBefore, action.payload.imdbID],
+        pickedBefore: [...state.pickedBefore, action?.payload?.imdbID],
         currentMovie: action.payload
       };
     }
@@ -38,6 +39,13 @@ export default (state = INITIAL_STATE, action) => {
           ...state.pageNumbers,
           [action.payload]: state.pageNumbers[action.payload] + 1 || 1
         },
+      };
+    }
+
+    case MOVE_TO_BLACK_LIST: {
+      return {
+        ...state,
+        blacklist: [...state.blacklist, action.payload],
       };
     }
 
